@@ -17,7 +17,7 @@ function getGiphy(keyword) {
     const giphyParams = {
         q: keyword,
         api_key: giphyKey,
-        limit: 1,
+        limit: 50,
         rating: 'g'
     };
     const queryString = formatQueryParams(giphyParams);
@@ -52,13 +52,14 @@ function getQuote(searchTerm) {
 };
 
 function displayGiphyResults(responseJson) {
-    console.log("displayGiphyResults ran")
+    console.log("displayGiphyResults ran", responseJson)
     $('#gif-results').empty();
     $('#results').removeClass('hidden');
     let image = "No GIFs found."
+    let k = Math.floor(Math.random()*responseJson.data.length)
     // for (let i = 0; i < responseJson.data.length; i++) {
-        if (responseJson.data[0].images.original) {
-            image = `<img src="${responseJson.data[0].images.original.url}">` 
+        if (responseJson.data[k].images.original) {
+            image = `<img src="${responseJson.data[k].images.original.url}">` 
         // }
     }
     $('#gif-results').append(`${image}`)
@@ -68,13 +69,20 @@ function displayQuotes(responseJson, searchTerm) {
     console.log(responseJson,'displayQuotes ran')
     $('#quote-results').empty();
     $('#results').removeClass('hidden');
-    let text = "No quotes found matching your search."
+    let quoteResults = []
+    let text = "No quotes found matching your search, but here's a fun gif."
     for (let i = 0; i < responseJson.length; i++) {
         if (responseJson[i].text.includes(searchTerm)) {
-            text = `<h3>${responseJson[i].text}<br><em>—${responseJson[i].author}</em></h3>`
-            STORE.gifSearch = (responseJson[i].author || searchTerm)
+            quoteResults.push(responseJson[i])
             // console.log(STORE.gifSearch);
-        };  
+            console.log("quoteResults", quoteResults)
+            let j = Math.floor(Math.random()*quoteResults.length)
+            text = `<h3>${quoteResults[j].text}<br><em>—${quoteResults[j].author}</em></h3>`
+            STORE.gifSearch = (quoteResults[j].author || searchTerm)
+        }; 
+        if (quoteResults.length == 0) {
+            STORE.gifSearch = (searchTerm)
+        };
     }; 
     console.log(text)
     $('#quote-results').append(`${text}`);
@@ -84,7 +92,7 @@ function displayQuotes(responseJson, searchTerm) {
 function watchForm() {
     $('form').submit(event => {
         event.preventDefault();
-        const searchTerm = $('#js-search-term').val();
+        const searchTerm = $('#js-search-term').val().toLowerCase();
         console.log(searchTerm);
         getQuote(searchTerm);
     });

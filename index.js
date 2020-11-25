@@ -57,10 +57,8 @@ function displayGiphyResults(responseJson) {
     $('#results').removeClass('hidden');
     let image = "No GIFs found."
     let k = Math.floor(Math.random()*responseJson.data.length)
-    // for (let i = 0; i < responseJson.data.length; i++) {
         if (responseJson.data[k].images.original) {
             image = `<img src="${responseJson.data[k].images.original.url}">` 
-        // }
     }
     $('#gif-results').append(`${image}`)
 }
@@ -74,7 +72,6 @@ function displayQuotes(responseJson, searchTerm) {
     for (let i = 0; i < responseJson.length; i++) {
         if (responseJson[i].text.includes(searchTerm)) {
             quoteResults.push(responseJson[i])
-            // console.log(STORE.gifSearch);
             console.log("quoteResults", quoteResults)
             let j = Math.floor(Math.random()*quoteResults.length)
             text = `<h3>${quoteResults[j].text}<br><em>—${quoteResults[j].author}</em></h3>`
